@@ -33,9 +33,24 @@ class PreparePZRealizationsPipe(PipelineStage):
 
     def run(self):
         for inp, _ in self.inputs:
-            filename = self.get_input(inp)
-            print(f"    PreparePZRealizationsPipe {filename}")
-            open(filename)
+            deepfield_zeropoint_filename = self.get_input("deepfield_zeropoint")
+            deepfield_zeropoint_data = np.load(deepfield_zeropoint_filename)
+            
+            shot_noise = self.config["shot_noise"]
+            sample_variance = self.config["sample_variance"]
+            photometric_zeropoint_deep = self.config["photometric_zeropoint_deep"]
+            redshift_sample_uncertainty = self.config["redshift_sample_uncertainty"]
+            photometric_zeropoint_wide = self.config["photometric_zeropoint_wide"]
+            photometric_skybackground_wide = self.config["photometric_skybackground_wide"]
+            
+            num_lhc_points = self.config["num_lhc_points"]
+            num_3sdir = self.config["num_3sdir"]
+            
+            generate_LHC_points(deepfield_zeropoint_data, shot_noise, sample_variance, photometric_zeropoint_deep, redshift_sample_uncertainty, photometric_zeropoint_wide, photometric_skybackground_wide, num_lhc_points )
+            
+            #
+            save_LHC_points here
+            num_3sdir 
 
             
 
@@ -49,7 +64,7 @@ class PhotozDeepZeroPointPipe(PipelineStage):
     """
 
     name = "PZRealizationsPipe"
-    inputs = [("deep_balrog_file", ParquetFile), ("deep_file", ParquetFile), ("deep_som", PklFile), ("LHC_samples", NpyFile)]
+    inputs = [("deep_balrog_file", ParquetFile), ("deep_file", ParquetFile), ("deep_som", PklFile), ("lhc_samples", NpyFile)]
     outputs = [("deep_cell_assignmemnt_balrog_files_withzp", NPZFile)]
     parallel = False
     
@@ -58,12 +73,21 @@ class PhotozDeepZeroPointPipe(PipelineStage):
 
     def run(self):
         for inp, _ in self.inputs:
-            filename = self.get_input(inp)
-            print(f"    PZRealizationPipe reading from {filename}")
-            open(filename)
+            deep_balrog_filename = self.get_input("deep_balrog_file")
+            deep_filename = self.get_input("deep_file")
+            deep_som_filename = self.get_input("deep_som")
+            lhc_samples_filename = self.get_input("LHC_samples")
+            output_file
 
-            deep_data = 
-            assign_som_zpu(deep_data, balrog_data, deep_som, LHC_samples, output_file):
+            deep_balrog_data = pd.read_parquet(deep_balrog_filename)
+            deep_data = pd.read_parquet(deep_filename)
+            with open(deep_som_filename, 'rb') as f:
+                deep_som = pickle.load(f)
+            lhc_samples = np.load(lhc_samples_filename)
+            
+            assign_som_zpu(deep_balrog_data, deep_data, deep_som, lhc_samples)
+            #Possibly shall merge all 100 file into one below
+            save_som_zpu(output_file)
 
 
 
