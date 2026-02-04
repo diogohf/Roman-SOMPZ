@@ -241,13 +241,11 @@ def rebin_cosmos(cosmos_original):
 #####################################################################
 
 # Get flux and flux errors for all deep bands that is detected at least once in Balorg, and separate based on deep field == COSMOS.
-def get_fluxes(balrog_file, deep_file):     
-    
-    bands = ['U','G','R','I','Z','J','H','K']
+#Rewrite in parquet format
+def get_fluxes(balrog_data, deep_data, bands):     
+     
     
     # get deep field galaxies that is selected in balrog
-
-    balrog_data = pickle.load(open(balrog_file, 'rb'), encoding='latin1')
     ids_b = balrog_data['ID'].values
 
     deep_data = pickle.load(open(deep_file, 'rb'), encoding='latin1')
@@ -261,8 +259,8 @@ def get_fluxes(balrog_file, deep_file):
     
     for i,band in enumerate(bands):
         print(i,band)
-        fluxes_d[:,i] = deep_data['BDF_FLUX_DERED_CALIB_%s'%band][match_d_b]
-        fluxerrs_d[:,i] = deep_data['BDF_FLUX_ERR_DERED_CALIB_%s'%band][match_d_b]
+        fluxes_d[:,i] = deep_data['flux_pgauss_%s'%band][match_d_b]
+        fluxerrs_d[:,i] = deep_data['flux_err_pgauss_%s'%band][match_d_b]
 
     #get fields  - each deep field has different zp uncertainty
     fields = deep_data['FIELD'].values[match_d_b]
@@ -270,6 +268,7 @@ def get_fluxes(balrog_file, deep_file):
     
     assert len(fluxes_d)==len(fields)
     return fluxes_d, fluxerrs_d, fields, deep_id
+
 
 
 
