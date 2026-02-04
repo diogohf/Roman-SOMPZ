@@ -1,20 +1,8 @@
 import numpy as np
-import pickle
-import matplotlib.pyplot as plt
-import sys
-sys.path.append('/global/cfs/cdirs/des/boyan/sompz_y6/sompz')
-import NoiseSOM as ns
-import multiprocessing as mp
-import time
-import warnings
-import os
-import yaml
-from functions_nzrealizations_pointz import*
-from mpi4py import MPI
 
 def assign_som_zpu(deep_data, balrog_data, deep_som, LHC_samples, output_file):
 
-    bands = ['LSST_u','LSST_g,'LSST_r','LSST_i','LSST_z','LSST_y', 'Y', 'J', 'H']
+    bands = ['LSST_u','LSST_g','LSST_r','LSST_i','LSST_z','LSST_y', 'Y', 'J', 'H']
     LHC_samples_ZPU = LHC_samples['ZPU']
 
 
@@ -88,27 +76,8 @@ def assign_som_zpu(deep_data, balrog_data, deep_som, LHC_samples, output_file):
     
     
     ###########################################################################################
-    ### Perturb fluxes in all fields besides COSMOS and run assignments in parallel
+    ### Perturb fluxes in all fields and run assignments in parallel
     ###########################################################################################
-    
-    if rank == 0:
-        iscosmos = (fields == 'COSMOS')
-        indices = np.arange(len(fluxes))
-    
-        fluxes_notcosmos = fluxes[~iscosmos]
-        fluxerrs_notcosmos = fluxerrs[~iscosmos]
-        fields_notcosmos = fields[~iscosmos]
-        indices_notcosmos = indices[~iscosmos]
-    
-    
-    
-    
-        #Cell assignment of deep fields
-        #This should be in the same order as the flux and flexerr in this file, and this contributes to the cell assignment of COSMOS
-        cells_default = np.load("%s/som_deep_64x64_default.npz"%outpath)['cells'] 
-    
-    
-    
     
     
     # Generate photometric uncertainty shifts and re-assign on deep SOM
@@ -124,38 +93,43 @@ def assign_som_zpu(deep_data, balrog_data, deep_som, LHC_samples, output_file):
         if rank == 0:
             print("Running LHC sample %d"%LHC_id)
             
-            fluxes = np.zeros((len(fluxes_notcosmos),len(bands)))
-            fluxerrs = np.zeros((len(fluxes_notcosmos),len(bands)))
+            fluxes_p = np.zeros((len(fluxes),len(bands)))
+            fluxerrs_p = np.zeros((len(fluxes),len(bands)))
     
-            ['C3', 'COSMOS', 'E2', 'X3']
+            #['COSMOS', 'C3', 'E2', 'X3']
+            zp_vals_COSMOS = LHC_samples_ZPU['COSMOS']
             zp_vals_C3 = LHC_samples_ZPU['C3'] #LHC_sample[0:8]
             zp_vals_X3 = LHC_samples_ZPU['X3'] #LHC_sample[8:16]
             zp_vals_E2 = LHC_samples_ZPU['E3'] #LHC_sample[16:24]
     
             for i, band in enumerate(bands):
                 print(i,band)
+                _mask = (fields_notcosmos == 'COSMOS')
+                fluxes_p[_mask,i] = fluxes[_mask,i] * 10**zp_vals_COSMOS[i]
+                fluxerrs_p[_mask,i] = fluxerrs[_mask,i] * 10**zp_vals_COSMOS[i]
+                
                 _mask = (fields_notcosmos == 'C3')
-                fluxes[_mask,i] = fluxes_notcosmos[_mask,i] * 10**zp_vals_C3[i]
-                fluxerrs[_mask,i] = fluxerrs_notcosmos[_mask,i] * 10**zp_vals_C3[i]
+                fluxes_p[_mask,i] = fluxes[_mask,i] * 10**zp_vals_C3[i]
+                fluxerrs_p[_mask,i] = fluxerrs[_mask,i] * 10**zp_vals_C3[i]
     
                 _mask = (fields_notcosmos == 'X3')
-                fluxes[_mask,i] = fluxes_notcosmos[_mask,i] * 10**zp_vals_X3[i]
-                fluxerrs[_mask,i] = fluxerrs_notcosmos[_mask,i] * 10**zp_vals_X3[i]
+                fluxes_p[_mask,i] = fluxes[_mask,i] * 10**zp_vals_X3[i]
+                fluxerrs_p[_mask,i] = fluxerrs[_mask,i] * 10**zp_vals_X3[i]
     
                 _mask = (fields_notcosmos == 'E2')
-                fluxes[_mask,i] = fluxes_notcosmos[_mask,i] * 10**zp_vals_E2[i]
-                fluxerrs[_mask,i] = fluxerrs_notcosmos[_mask,i] * 10**zp_vals_E2[i]
+                fluxes_p[_mask,i] = fluxes[_mask,i] * 10**zp_vals_E2[i]
+                fluxerrs_p[_mask,i] = fluxerrs[_mask,i] * 10**zp_vals_E2[i]
         else:
-            fluxes, fluxerrs = None, None
+            fluxes_p, fluxerrs_p = None, None
          
     
         # Broadcast data to all processes
-        fluxes = comm.bcast(fluxes, root=0)
-        fluxerrs = comm.bcast(fluxerrs, root=0)
+        fluxes_p = comm.bcast(fluxes_p, root=0)
+        fluxerrs_p = comm.bcast(fluxerrs_p, root=0)
         
         # Split the data among processes
-        fluxes_chunks = np.array_split(fluxes, size)
-        fluxerrs_chunks = np.array_split(fluxerrs, size)
+        fluxes_chunks = np.array_split(fluxes_p, size)
+        fluxerrs_chunks = np.array_split(fluxerrs_p, size)
     
         # Each process gets its own chunk of data
         local_fluxes = fluxes_chunks[rank]
@@ -173,11 +147,7 @@ def assign_som_zpu(deep_data, balrog_data, deep_som, LHC_samples, output_file):
         if rank == 0:
             cells_zp= np.concatenate(cells_zp)
             
-            # COSMOS BMU assignment from cells_default
-            # non-COSMOS from cell_test after adding ZPU
-            cells_final = np.zeros_like(cells_default)
-            cells_final[iscosmos] = cells_default[iscosmos]
-            cells_final[indices_notcosmos] = cells_zp
+            cells_final = cells_zp
     
             print(cells_zp.shape)
             print(cells_final.shape)
