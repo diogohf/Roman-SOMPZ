@@ -33,6 +33,9 @@ def get_realizations(sv_redshift_data, sv_deep_data, shot_noise, sample_variance
                       wide_cells_assignment_balrog_file)
 
 
+    #Now just assume they are the same. The reason for below is if you want to do redshift sample uncertainty, you want to perturb only the redhsift sample to save time and memory
+    deep_cells_assignment_spec_file = deep_cells_assignment_balrog_file
+    wide_cells_assignment_spec_file = wide_cells_assignment_balrog_file
     spec_data_noshift = redshift_deep_balrog_data[['ra','dec','z']]
     spec_data_noshift['cell_deep'] = deep_cells_assignment_spec_file
     spec_data_noshift['cell_wide_unsheared'] = wide_cells_assignment_spec_file
