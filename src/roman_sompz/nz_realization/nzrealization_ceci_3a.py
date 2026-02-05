@@ -1,6 +1,22 @@
-    """CatEstimator subclass to compute redshift PDFs for SOMPZ
+from ceci.config import StageParameter as Param
+import rail.estimation.algos.som as somfuncs
+from rail.core.common_params import SHARED_PARAMS
+import numpy as np
+import gc
+#from ceci_example.types import NpyFile, HDFFile
+# We need to define NpyFile etc we want to use inside ceci_example.types, Or not??? get_input don't use this function and we open in run ourselves
+def_bands = ["u", "g", "r", "i", "z", "y"]
+default_bin_edges = [0.0, 0.405, 0.665, 0.96, 2.0]
+default_input_names = []
+default_err_names = []
+default_zero_points = []
+
+#selection_nz_final_rushift_zpshift.py call functions_nzrealizations_Roman_pointz.py
+class RunPZRealizationsPipe(CatEstimator):
     """
-    name = "PhotozDeepZeroPointPipe"
+    Generates redshift realizations, where each is a possible redshift distribution given the uncertainty.
+    """
+    name = "RunPZRealizationsPipe"
     config_options = CatEstimator.config_options.copy()
     config_options.update(chunk_size=SHARED_PARAMS,
                           redshift_col=SHARED_PARAMS, #Param(str, "redshift", msg="name of redshift column"),

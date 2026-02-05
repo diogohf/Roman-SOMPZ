@@ -3,7 +3,6 @@ from rail.core.data import TableHandle, ModelHandle, QPHandle, Hdf5Handle
 from rail.estimation.estimator import CatEstimator, CatInformer
 #from ceci_example.types import NpyFile, HDFFile
 # We need to define NpyFile etc we want to use inside ceci_example.types, Or not??? get_input don't use this function and we open in run ourselves
-
 class PreparePZRealizationsPipe(PipelineStage):
     """
     Generates LHC sampling points for the uncertainty beside sample variance and shot noise.
@@ -42,4 +41,4 @@ class PreparePZRealizationsPipe(PipelineStage):
             
             generate_LHC_points(deepfield_zeropoint_data, photometric_zeropoint_deep, redshift_sample_uncertainty, photometric_zeropoint_wide, photometric_skybackground_wide, num_lhc_points, LHC_samples_filename)
             
-  
+         
