@@ -101,7 +101,7 @@ som_deepdeep_estimator:
   hdf5_groupname: None
   zmin: 0.0
   zmax: &id011 5.0
-  nzbins: &id012 501
+  nzbins: &id012 201
   calculated_point_estimates: &id001 []
   recompute_point_estimates: false
   redshift_col: *id013
@@ -229,17 +229,12 @@ som_pzc_stage:
   output_mode: default
   chunk_size: 2000
   hdf5_groupname: None
-  zmin: 0.0
-  zmax: *id011
-  nzbins: *id012
+  zbins_min: 0.0
+  zbins_max: *id011
+  zbins_dz: *id012
   calculated_point_estimates: *id001
   recompute_point_estimates: false
   inputs: &id010
-  - MAG_U
-  - MAG_G
-  - MAG_R
-  - MAG_I
-  - MAG_Z
   redshift_col: *id013
   deep_groupname: None
   bin_edges:
@@ -250,7 +245,7 @@ som_pzc_stage:
   - 2.0
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: 0.02
+  zbins_dz: *id012
   name: som_pzc_stage
   pz_c: out/pz_c.hdf5
   config: None
@@ -269,6 +264,7 @@ pcchat_stage:
   wide_som_size: 1024
   redshift_col: *id013
   config: None
+  pc_chat: ./out/pc_chat_pcchat_stage.hdf5
 sompz_pzchat:
   output_mode: default
   chunk_size: 2000
@@ -280,7 +276,7 @@ sompz_pzchat:
   recompute_point_estimates: false
   inputs: *id010
   redshift_col: *id013
-  bin_edges:
+  bin_edges: &id023
   - 0.0
   - 0.35
   - 0.65
@@ -288,9 +284,10 @@ sompz_pzchat:
   - 2.0
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: 0.025
+  zbins_dz: *id012
   name: sompz_pzchat
   config: None
+  pz_chat: out/pz_chat.hdf5
 sompz_tomobin:
   output_mode: default
   chunk_size: 2000
@@ -302,19 +299,14 @@ sompz_tomobin:
   recompute_point_estimates: false
   inputs: *id010
   redshift_col: *id013
-  bin_edges:
-  - 0.0
-  - 0.35
-  - 0.65
-  - 0.85
-  - 2.0
+  bin_edges: *id023
   zbins_min: 0.0
   zbins_max: *id011
   zbins_dz: &id020 0.025
   name: sompz_tomobin
   wide_som_size: 1024
   deep_som_size: 4096
-  tomo_bins_wide: tomo_bins_wide.hdf5
+  tomo_bins_wide: ./out/tomo_bins_wide.hdf5
   config: None
 sompz_nz:
   output_mode: default
@@ -339,7 +331,7 @@ sompz_nz:
   name: sompz_nz
   wide_som_size: 625
   deep_som_size: 1024
-  nz: FINAL_NZ.hdf5
+  nz: ./out/FINAL_NZ.hdf5
   config: None
 PhotozDeepZeroPointPipe:
   output_mode: default
@@ -373,7 +365,7 @@ PreparePZRealizationsPipe:
   photometric_zeropoint_wide: False
   photometric_skybackground_wide: False
   deepfield_zeropoint_data: [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001] 
-  num_lhc_points: 3
+  num_lhc_points: &id021 3
   LHC_samples: ./out/LHC_samples_small.fit
 Samplevariance: 
     area:  20.0
@@ -381,4 +373,22 @@ Samplevariance:
     zmax: *id011
     zbins_dz: *id020 
     Sample_variance: ./out/Sample_variance.fit
-
+RunPZRealizationsPipe:
+    redshift_col: *id013
+    shot_noise: True
+    sample_variance: False
+    photometric_zeropoint_deep: True
+    redshift_sample_uncertainty: False
+    photometric_zeropoint_wide: False
+    photometric_skybackground_wide: False
+    num_lhc_points: *id021 
+    num_3sdir: 2
+    bands: *id006 
+    inputs: *id006
+    input_errs: *id007
+    som_shape: *id005
+    photoz_realizations: ./out/photoz_realizations.hdf5
+    name: RunPZRealizationsPipe
+    zbins_min: 0.0
+    zbins_max: *id011
+    zbins_dz: *id020

@@ -119,6 +119,7 @@ stages:
     balrogdata: input_deep_data
     lhc_samples: LHC_samples 
     assignment: assignment_som_deepdeep_estimator_perturb
+
 - name: PreparePZRealizationsPipe 
   classname:  PreparePZRealizationsPipe
   nprocess: 1
@@ -128,7 +129,26 @@ stages:
   classname:  Samplevariance
   nprocess: 1
   module_name: roman_sompz.nz_realization.nzrealization_ceci
+  aliases:
+    Sample_variance: sample_variance
 
+- name: RunPZRealizationsPipe
+  classname: RunPZRealizationsPipe
+  nprocess: 1
+  module_name: roman_sompz.nz_realization.nzrealization_ceci_3a
+  aliases:
+      deep_balrog_file: input_deep_data
+      redshift_deep_balrog_file: input_spec_data
+      pchat: pz_chat_sompz_pzchat 
+      pcchat: pc_chat_pcchat_stage
+      tomo_bin_assignment: tomo_bins_wide_sompz_tomobin 
+      deep_cells_assignment_balrog_files_withzp: assignment_som_deepdeep_estimator_perturb
+      sv_redshift_file: sample_variance
+      sv_deep_file: sample_variance
+      deep_som: model_som_deep_informer
+      wide_som: model_som_wide_informer
+      wide_cells_assignment_balrog_files: assignment_som_deepwide_estimator
+      deep_cells_assignment_balrog_files: assignment_som_deepdeep_estimator 
 
 site:
   max_threads: 128
