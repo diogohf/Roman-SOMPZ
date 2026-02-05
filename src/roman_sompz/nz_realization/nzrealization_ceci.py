@@ -60,6 +60,7 @@ class PreparePZRealizationsPipe(PipelineStage):
             num_lhc_points = self.config["num_lhc_points"]
             
             samples = generate_LHC_points(np.array(deepfield_zeropoint_data), photometric_zeropoint_deep, redshift_sample_uncertainty, photometric_zeropoint_wide, photometric_skybackground_wide, num_lhc_points)
+            samples=samples.T
             filename = self.get_output(self.outputs[0][0])
             t= np.zeros(len(samples), dtype=[("samples", '>f8', samples.shape[-1])])
             t['samples'] = samples
@@ -274,6 +275,7 @@ class PhotozDeepZeroPointPipe(CatEstimator):
             self._process_chunk(s, e, test_data, first, len(LHC_samples))
             first = False
             for LHC_id, LHC_sample in enumerate(LHC_samples):
+                print(LHC_sample.shape)
                 self._process_chunk_perturb(s, e, test_data, first, LHC_id, LHC_sample)
             gc.collect()
         if self.comm:  # pragma: no cover
