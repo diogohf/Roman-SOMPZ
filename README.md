@@ -5,13 +5,12 @@ Self-Organizing Map Photo-z (SOMPZ) implementation for Roman Space Telescope pho
 ## Overview
 
 Roman SOMPZ uses self-organizing maps to estimate photometric redshifts from multi-band photometry. This package provides tools for:
-- Creating photometry catalogs
-- Training SOM models
+- Train SOM models
 - Assign SOM cells for each galaxy 
-- Estimating n(z) distributions
+- Estimate n(z) distributions
 - Perform uncertainty quantifications
 - Summarize n(z) realizations
-- Generating diagnostic plots
+- Generate diagnostic plots
 
 ## Flow chart 
 ![plot](./job/flow-chart.png)
