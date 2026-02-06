@@ -1,6 +1,0 @@
-sphinx
-sphinx_rtd_theme
-sphinx-autoapi
-sphinx_design
-myst-nb
-sphinx-copybutton
