@@ -435,7 +435,7 @@ class SOMPZInformer(CatInformer):
                           thresh_val=Param(float, 1.e-5, msg="threshold value for set_threshold for data"),
                           thresh_val_err=Param(float, 1.e-5, msg="threshold value for set_threshold for data error"))
 
-    inputs = [('input_data', TableHandle),
+    inputs = [('input_data', TableHandle), ('checked', TableHandle)
               ]
     outputs = [('model', ModelHandle),
                ]

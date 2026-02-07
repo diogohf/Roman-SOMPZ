@@ -1,12 +1,12 @@
 output_dir: ./
 log_dir: out
 resume: True # If all the outputs for a stage already exist then do not re-run that stage
-config: ../yaml/config.yaml
+config: ../yaml/config_ou_tae_02062026.yaml
 modules: rail
 inputs:
-  input_deep_data: ./data/hlwas_cosmos_260120_UM_2026_01_22.parquet
-  input_spec_data: ./data/hlwas_cosmos_260120_UM_2026_01_22.parquet
-  input_wide_data: ./data/hlwas_cosmos_260120_UM_2026_01_22.parquet
+  input_deep_data: ./out/phot_OU2024-IMCOM_300sq-arcmin_ugrizyYJH_clipzero.parquet
+  input_spec_data: ./out/phot_OU2024-IMCOM_300sq-arcmin_ugrizyYJH_clipzero.parquet
+  input_wide_data: ./out/phot_OU2024-IMCOM_300sq-arcmin_ugrizyYJH_clipzero.parquet
 stages:
 - name: checkinputdeep
   classname: Inputcheck 
@@ -30,11 +30,10 @@ stages:
     catfile: input_wide_data    
     checked: checkwide
 
-
 - name: som_wide_informer_big
   classname: SOMPZInformer
   nprocess: 1
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     model: model_som_wide_informer
     input_data: input_wide_data
@@ -43,15 +42,16 @@ stages:
 - name: som_deep_informer_big
   classname: SOMPZInformer
   nprocess: 1
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     model: model_som_deep_informer
     input_data: input_deep_data
     checked: checkdeep
+
 - name: som_deepdeep_estimator
   classname: SOMPZEstimatorDeep
   nprocess: &id001 128
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     deep_model: model_som_deep_informer
     data: input_deep_data
@@ -59,7 +59,7 @@ stages:
 - name: som_deepwide_estimator
   classname: SOMPZEstimatorWide
   nprocess:  *id001
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     data: input_deep_data
     assignment: assignment_som_deepwide_estimator
@@ -67,7 +67,7 @@ stages:
 - name: som_deepspec_estimator
   classname: SOMPZEstimatorDeep
   nprocess: *id001
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     assignment: assignment_som_deepspec_estimator
     deep_model: model_som_deep_informer
@@ -75,7 +75,7 @@ stages:
 - name: som_widewide_estimator
   classname: SOMPZEstimatorWide
   nprocess: *id001
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     assignment: assignment_som_widewide_estimator
     wide_model: model_som_wide_informer 
@@ -83,7 +83,7 @@ stages:
 - name: som_widespec_estimator
   classname: SOMPZEstimatorWide
   nprocess: *id001
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     assignment: assignment_som_widespec_estimator
     wide_model: model_som_wide_informer 
@@ -91,7 +91,7 @@ stages:
 - name: som_pzc_stage
   classname: SOMPZPzc
   nprocess: 1
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     cell_deep_spec_data: assignment_som_deepspec_estimator
     spec_data: input_spec_data
@@ -99,7 +99,7 @@ stages:
 - name: pcchat_stage
   classname: SOMPZPc_chat
   nprocess: 1
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     cell_deep_balrog_data: assignment_som_deepdeep_estimator
     cell_wide_balrog_data: assignment_som_deepwide_estimator
@@ -107,7 +107,7 @@ stages:
 - name: sompz_pzchat
   classname: SOMPZPzchat
   nprocess: 1
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     spec_data: input_spec_data
     cell_deep_spec_data: assignment_som_deepspec_estimator
@@ -118,7 +118,7 @@ stages:
 - name: sompz_tomobin
   classname: SOMPZTomobin
   nprocess: 1
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     spec_data: input_spec_data
     cell_deep_spec_data: assignment_som_deepspec_estimator
@@ -127,7 +127,7 @@ stages:
 - name: sompz_nz
   classname: SOMPZnz
   nprocess: 1
-  module_name: roman_sompz.rail_sompz.src.rail.estimation.algos.sompz
+  module_name: rail.estimation.algos.sompz
   aliases:
     spec_data: input_spec_data
     cell_deep_spec_data: assignment_som_deepspec_estimator

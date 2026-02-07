@@ -1,6 +1,6 @@
 som_deep_informer_big:
   output_mode: default
-  redshift_col: &id013 specz
+  redshift_col: &id013 redshift
   hdf5_groupname: None
   nproc: 128
   inputs: &id002
@@ -24,17 +24,17 @@ som_deep_informer_big:
   - flux_err_pgauss_J
   - flux_err_pgauss_H
   zero_points: &id004
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5  
-  som_shape: &id005 [64, 64]
-  som_minerror: 0.01
+  - 27.0
+  - 27.0
+  - 27.0
+  - 27.0
+  - 27.0
+  - 27.0
+  - 34.072581359599575
+  - 34.08865945833424
+  - 34.1231989983669
+  som_shape: &id005 [64,64]
+  som_minerror: 0.0001
   som_wrap: &id016 false
   som_take_log: &id015 True
   convert_to_flux: &id014 false
@@ -71,15 +71,15 @@ som_wide_informer_big:
   - flux_err_pgauss_J
   - flux_err_pgauss_H
   zero_points: &id008
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5
-  - 22.5  
+  - 27.0
+  - 27.0
+  - 27.0
+  - 27.0
+  - 27.0
+  - 27.0
+  - 34.072581359599575
+  - 34.08865945833424
+  - 34.1231989983669
 
   som_shape: &id009 [32, 32]
   som_minerror: 0.005
@@ -93,7 +93,6 @@ som_wide_informer_big:
   model: out/model_wide.pkl
   som_takelog: false
   config: None
-
 checkinputdeep:
   output_mode: default
   checked: out/checked_deep.txt 
@@ -119,7 +118,6 @@ checkinputwide:
   name: checkinputwide
   inputs: *id006
   input_errs: *id007
-
 
 
 
@@ -259,13 +257,13 @@ som_pzc_stage:
   hdf5_groupname: None
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: &id020 0.05
+  zbins_dz: *id012
   calculated_point_estimates: *id001
   recompute_point_estimates: false
   inputs: &id010
   redshift_col: *id013
   deep_groupname: None
-  bin_edges: &id023
+  bin_edges:  &id023
   - 0.0
   - 0.35
   - 0.65
@@ -274,7 +272,7 @@ som_pzc_stage:
   - 3.0
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: *id020
+  zbins_dz: *id012
   name: som_pzc_stage
   pz_c: out/pz_c.hdf5
   config: None
@@ -308,7 +306,7 @@ sompz_pzchat:
   bin_edges: *id023
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: *id020
+  zbins_dz: *id012
   name: sompz_pzchat
   config: None
   pz_chat: out/pz_chat.hdf5
@@ -326,7 +324,7 @@ sompz_tomobin:
   bin_edges: *id023
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: *id020
+  zbins_dz: &id020 0.05
   name: sompz_tomobin
   wide_som_size: 1024
   deep_som_size: 4096
@@ -348,8 +346,8 @@ sompz_nz:
   zbins_max: *id011
   zbins_dz: *id020
   name: sompz_nz
-  wide_som_size: 625
-  deep_som_size: 1024
+  wide_som_size: 1024
+  deep_som_size: 4096
   nz: ./out/FINAL_NZ.hdf5
   config: None
 PhotozDeepZeroPointPipe:

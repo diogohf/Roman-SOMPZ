@@ -75,7 +75,7 @@ def get_realizations(sv_redshift_data, sv_deep_data, shot_noise, sample_variance
         Rzc_bins = []
         Rc_redshift_bins = []
         Rc_deep_bins = []
-
+        print(tomo_bins_wide)
         # Loop over the tomographic bins
         for i in range(num_bins):
             # Compute Nzc for spec_data
