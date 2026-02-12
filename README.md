@@ -47,7 +47,14 @@ If you cloned without `--recurse-submodules`, initialize them with:
 ```bash
 git submodule update --init --recursive
 ```
-
+## Clone scm-pipeline
+```
+cd ..
+git clone https://github.com/Roman-HLIS-Cosmology-PIT/scm-pipeline.git
+cd scm-pipeline
+pip install .
+cd ../Roman-SOMPZ
+```
 ## Quick Start
 ```
 cd job
