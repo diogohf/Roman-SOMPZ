@@ -29,7 +29,7 @@ cd Roman-SOMPZ
 ```
 3. Create an environment
 ```bash
-conda create --name sompz_roman python=3.12 ipykernel
+conda create --name sompz_roman python=3.10 ipykernel
 conda activate sompz_roman
 ```
 4. Install the package:
