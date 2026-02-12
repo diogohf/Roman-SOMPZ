@@ -1,5 +1,5 @@
 pip install setuptools_scm
-pip install astropy==7.2
+conda install astropy
 conda install matplotlib
 conda install numba
 conda install tqdm
