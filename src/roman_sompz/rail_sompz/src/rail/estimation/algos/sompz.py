@@ -7,7 +7,7 @@ import qp
 from ceci.config import StageParameter as Param
 from rail.core.data import TableHandle, ModelHandle, QPHandle, Hdf5Handle
 from rail.estimation.estimator import CatEstimator, CatInformer
-import rail.estimation.algos.som as somfuncs
+import roman_sompz.rail_sompz.src.rail.estimation.algos.som as somfuncs
 from rail.core.common_params import SHARED_PARAMS
 from multiprocessing import Pool
 import pandas as pd
