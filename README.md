@@ -59,7 +59,13 @@ cd ../Roman-SOMPZ
 ```
 module swap PrgEnv-${PE_ENV,,} PrgEnv-gnu 
 MPICC="cc -shared" pip install --force-reinstall --no-cache-dir --no-binary=mpi4py mpi4py\
-module load openmpi
+```
+### In yml file 
+```
+site:
+  max_threads: 128
+  mpi_command: srun -n  ##Add this
+  name: local
 ```
 ## Quick Start
 ```
