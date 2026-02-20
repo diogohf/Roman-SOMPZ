@@ -60,6 +60,15 @@ cd ../Roman-SOMPZ
 module swap PrgEnv-${PE_ENV,,} PrgEnv-gnu 
 MPICC="cc -shared" pip install --force-reinstall --no-cache-dir --no-binary=mpi4py mpi4py\
 ```
+### For DCC (Duke Computing Cluster) users to run mpirun
+DCC has strict HDF5 sync checks due to file locking. This may result in 
+```
+SError: Can't synchronously write data (Can't perform independent write when MPI_File_sync is required by ROMIO driver.)
+```
+Disable the strict file sync by running the following code:
+```
+export HDF5_DO_MPI_FILE_SYNC=0
+```
 ### In yml file 
 ```
 site:
