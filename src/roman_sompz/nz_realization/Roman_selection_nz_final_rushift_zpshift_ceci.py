@@ -219,7 +219,7 @@ def get_realizations(sv_redshift_data, sv_deep_data, shot_noise, sample_variance
         assert sv_redshift_data.shape[0]==len(zbinsc)
         assert sv_deep_data.shape[0]==len(zbinsc)
         
-        if shot_noise:
+        if sample_variance:
             sv_redshift_data = sv_redshift_data
             sv_deep_data = sv_deep_data
         else:
