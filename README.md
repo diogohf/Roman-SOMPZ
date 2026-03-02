@@ -42,6 +42,7 @@ git clone https://github.com/LSSTDESC/ceci.git
 ```
 5. Create an environment
 ```
+module load python
 conda create --name sompz_roman python=3.11 ipykernel
 conda activate sompz_roman
 ```
