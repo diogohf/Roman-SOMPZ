@@ -19,22 +19,65 @@ Roman SOMPZ uses self-organizing maps to estimate photometric redshifts from mul
 
 - Python 3.11+
 - pip
-
+  
+## NERSC installation 
 ### Install from source
 1. Fork the repository
-2. Clone the repository with submodules:
+2. Clone the Roman-SOMPZ repository with submodules:
 ```bash
 git clone --recurse-submodules https://github.com/yourusername/Roman-SOMPZ.git
-cd Roman-SOMPZ
+3. Clone scm-pipeline
 ```
-3. Create an environment
-```bash
+git clone https://github.com/Roman-HLIS-Cosmology-PIT/scm-pipeline.git
+```
+4. Clone ceci
+```
+git clone https://github.com/LSSTDESC/ceci.git
+```
+5. Create an environment
+```
 conda create --name sompz_roman python=3.11 ipykernel
 conda activate sompz_roman
 ```
-4. Install the package:
-```bash
+6. Enable mpi4py and parallel hdf5
+```
+module swap PrgEnv-${PE_ENV,,} PrgEnv-gnu 
+module load cray-hdf5-parallel
+MPICC="cc -shared" pip install --force-reinstall --no-cache-dir --no-binary=mpi4py mpi4py
+```
+```
+export HDF5_DIR=$HDF5_ROOT
+conda install -c defaults --override-channels numpy "cython<3"
+HDF5_MPI=ON CC=cc pip install -v --force-reinstall --no-cache-dir --no-binary=h5py --no-build-isolation --no-deps h5py
+```
+7. Install scm-pipeline and ceci
+```
+cd ../scm-pipeline
+pip install -e.
+cd ../ceci
+pip install -e.
+cd ../Roman-SOMPZ
+```
+8. Install the Roman-SOMPZ package:
+```
 sh install.sh
+```
+9. Download dust maps 
+```
+cd job/data
+gdown  1NARLZe2inHRVsC_9-UQ-i3vIHeJCjajc
+gdown  1Cui9ED_ZcdZBGjFyCdFaqrj3chGWFiUy
+cd ..
+cd ..
+```
+10. If you cloned without `--recurse-submodules`, initialize them with:
+```
+git submodule update --init --recursive
+```
+11. Quick Start
+```
+cd job
+ceci ../yaml/test_all.yaml
 ```
 
 ### Submodule dependencies
@@ -47,19 +90,8 @@ If you cloned without `--recurse-submodules`, initialize them with:
 ```bash
 git submodule update --init --recursive
 ```
-## Clone scm-pipeline
-```
-cd ..
-git clone https://github.com/Roman-HLIS-Cosmology-PIT/scm-pipeline.git
-cd scm-pipeline
-pip install .
-cd ../Roman-SOMPZ
-```
-## For NERSC users to run mpirun
-```
-module swap PrgEnv-${PE_ENV,,} PrgEnv-gnu 
-MPICC="cc -shared" pip install --force-reinstall --no-cache-dir --no-binary=mpi4py mpi4py\
-```
+
+
 ### For DCC (Duke Computing Cluster) users to run mpirun
 DCC has strict HDF5 sync checks due to file locking. This may result in 
 ```
@@ -76,13 +108,7 @@ site:
   mpi_command: srun -n  ##Add this
   name: local
 ```
-## Download dust maps 
-```
-cd job/data
-gdown  1NARLZe2inHRVsC_9-UQ-i3vIHeJCjajc
-gdown  1Cui9ED_ZcdZBGjFyCdFaqrj3chGWFiUy
-cd ..
-cd ..
+
 ```
 ## Quick Start
 ```
