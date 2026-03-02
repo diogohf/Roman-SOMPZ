@@ -29,7 +29,7 @@ cd Roman-SOMPZ
 ```
 3. Create an environment
 ```bash
-conda create --name sompz_roman python=3.10 ipykernel
+conda create --name sompz_roman python=3.11 ipykernel
 conda activate sompz_roman
 ```
 4. Install the package:
@@ -75,6 +75,14 @@ site:
   max_threads: 128
   mpi_command: srun -n  ##Add this
   name: local
+```
+## Download dust maps 
+```
+cd job/data
+gdown  1NARLZe2inHRVsC_9-UQ-i3vIHeJCjajc
+gdown  1Cui9ED_ZcdZBGjFyCdFaqrj3chGWFiUy
+cd ..
+cd ..
 ```
 ## Quick Start
 ```
