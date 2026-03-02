@@ -319,7 +319,7 @@ sompz_pchat:
   inputs: *id010
   name: sompz_pchat
   config: None
-  pz_chat: out/pchat.hdf5
+  pchat: out/pchat.hdf5
 
 sompz_tomobin:
   output_mode: default
