@@ -1168,7 +1168,7 @@ class SOMPZPchat(CatEstimator):
     """
     name = "SOMPZPchat"
     config_options = CatEstimator.config_options.copy()
-    config_options.update(som_wide_shape=Param(list, som_shape, msg="shape of deep som"))
+    config_options.update(som_shape=Param(list, [32,32], msg="shape of deep som"))
     inputs = [
               ('cell_wide_wide_data', TableHandle),
               ]
@@ -1181,8 +1181,8 @@ class SOMPZPchat(CatEstimator):
         # check on bands, errs, and prior band
 
     def run(self):
-        som_wide_shape=self.config['som_wide_shape']
-        som_cell_total = som_wide_shape[0] * som_wide_shape[1]
+        som_shape=self.config['som_shape']
+        som_cell_total = som_shape[0] * som_shape[1]
         cell_wide_wide_data = self.get_data('cell_wide_wide_data')
         weights = np.ones(len(cell_wide_wide_data['cells']))
         wide_data_for_pz = pd.DataFrame({'cell_wide': cell_wide_wide_data['cells'], 
@@ -1444,6 +1444,29 @@ class SOMPZEstimatorBase(CatEstimator):
         -------
 
         """
+        # --- Boyan: START PATCH ---
+        # --- There is chunck padding and actual data mismatch ---
+        # --- This is brute force solution to it. Problem probably lie in table_io ---
+        # 1. If the iterator hands us a chunk completely past the file limit, ignore it.
+        print('PATCH with resize chunk')
+        print(self._input_length)
+        
+        if start >= self._input_length:
+            return
+            
+        # 2. If the iterator's end index overshoots the file limit, trim the data to fit.
+        if end > self._input_length:
+            true_end = self._input_length
+            true_size = true_end - start
+            for key in output_chunk.keys():
+                truncated_data = output_chunk[key][true_size:]
+                print(f"Truncating from '{key}': {truncated_data}")
+                
+                output_chunk[key] = output_chunk[key][:true_size]
+            end = true_end
+        
+        # --- END PATCH ---
+        
         if first:
             self._output_handle = self.add_handle('assignment', data=output_chunk)
             self._output_handle.initialize_write(self._input_length, communicator=self.comm)

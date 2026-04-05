@@ -316,6 +316,29 @@ class PhotozZpDustPipe(CatEstimator):
         -------
 
         """
+        # --- Boyan: START PATCH ---
+        # --- There is chunck padding and actual data mismatch ---
+        # --- This is brute force solution to it. Problem probably lie in table_io ---
+        # 1. If the iterator hands us a chunk completely past the file limit, ignore it.
+        print('PATCH with resize chunk')
+        print(self._input_length)
+        
+        if start >= self._input_length:
+            return
+            
+        # 2. If the iterator's end index overshoots the file limit, trim the data to fit.
+        if end > self._input_length:
+            true_end = self._input_length
+            true_size = true_end - start
+            for key in output_chunk.keys():
+                truncated_data = output_chunk[key][true_size:]
+                print(f"Truncating from '{key}': {truncated_data}")
+                
+                output_chunk[key] = output_chunk[key][:true_size]
+            end = true_end
+        
+        # --- END PATCH ---
+        
         if first:
             name = "assignment"
             self._output_handle = self.add_handle(name, data=output_chunk)
@@ -467,7 +490,7 @@ class RunPZRealizationsPipe(CatEstimator):
         zbins_dz=StageParameter(float, 0.01, msg="delta z for defining output grid"),
 
     )
-    inputs = [("deep_balrog_file", TableHandle), ("redshift_deep_balrog_file", TableHandle), ("deep_som", ModelHandle), ("wide_som", ModelHandle), ("pchat", Hdf5Handle), ("pcchat", Hdf5Handle), ("tomo_bin_assignment", Hdf5Handle), ("deep_cells_assignment_balrog_files_withzp", TableHandle), ("wide_cells_assignment_balrog_files_withzp", TableHandle), ("wide_cells_assignment_wide_files_withzp", TableHandle), ("sv_redshift_file", TableHandle),("sv_deep_file", TableHandle), ("deep_cells_assignment_balrog_files", TableHandle),("wide_cells_assignment_balrog_files", TableHandle)]
+    inputs = [("deep_balrog_file", TableHandle), ("redshift_deep_balrog_file", TableHandle), ("deep_som", ModelHandle), ("wide_som", ModelHandle), ("pchat", Hdf5Handle), ("pcchat", Hdf5Handle), ("tomo_bin_assignment", Hdf5Handle), ("deep_cells_assignment_balrog_files_withzp", TableHandle), ("wide_cells_assignment_balrog_files_withzp", TableHandle), ("wide_cells_assignment_wide_files_withzp", TableHandle), ("sv_redshift_file", TableHandle),("sv_deep_file", TableHandle), ("deep_cells_assignment_balrog_files", TableHandle),("wide_cells_assignment_balrog_files", TableHandle), ("deep_cells_assignment_spec_files", TableHandle), ("wide_cells_assignment_spec_files", TableHandle)]
     outputs = [("photoz_realizations", TableHandle)]
     def __init__(self, args, **kwargs):
         """Constructor, build the CatEstimator, then do SOMPZ specific setup
@@ -534,8 +557,12 @@ class RunPZRealizationsPipe(CatEstimator):
             tomo_bin_assignment = self.get_data('tomo_bin_assignment')
             deep_cells_assignment_balrog = self.get_data("deep_cells_assignment_balrog_files")
             wide_cells_assignment_balrog = self.get_data("wide_cells_assignment_balrog_files")
+            deep_cells_assignment_spec = self.get_data("deep_cells_assignment_spec_files")
+            wide_cells_assignment_spec = self.get_data("wide_cells_assignment_spec_files")
             pchat = np.squeeze(self.get_data('pchat')['pchat'])
             pcchat = self.get_data('pcchat')['pc_chat']
+            print(np.shape(pchat),pchat)
+            print(np.shape(pcchat),pcchat)
             assert(pcchat.shape[1]==len(pchat))
             bands = self.config.bands 
             deep_som_size = int(deep_cells_assignment_balrog['som_size'][0])
@@ -551,7 +578,7 @@ class RunPZRealizationsPipe(CatEstimator):
             #    print('Sorry dont have photometric_skybackground_wide yet.')
             zbins = np.arange(self.config.zbins_min - self.config.zbins_dz / 2., self.config.zbins_max + self.config.zbins_dz, self.config.zbins_dz)
                 
-            nz_realizations = get_realizations(sv_redshift_data, sv_deep_data, shot_noise, sample_variance, redshift_sample_uncertainty, photometric_zeropoint_deep, photometric_zeropoint_wide, photometric_skybackground_deep, photometric_skybackground_wide, num_lhc_points, num_3sdir, deep_balrog_data, redshift_deep_balrog_data, deep_som_size, wide_som_size, pchat, pcchat, tomo_bin_assignment, deep_cells_assignment_balrog_files_withzp, wide_cells_assignment_balrog_files_withzp, wide_cells_assignment_wide_files_withzp, deep_cells_assignment_balrog, wide_cells_assignment_balrog, bands, self.config.redshift_col, zbins)
+            nz_realizations = get_realizations(sv_redshift_data, sv_deep_data, shot_noise, sample_variance, redshift_sample_uncertainty, photometric_zeropoint_deep, photometric_zeropoint_wide, photometric_skybackground_deep, photometric_skybackground_wide, num_lhc_points, num_3sdir, deep_balrog_data, redshift_deep_balrog_data, deep_som_size, wide_som_size, pchat, pcchat, tomo_bin_assignment, deep_cells_assignment_balrog_files_withzp, wide_cells_assignment_balrog_files_withzp, wide_cells_assignment_wide_files_withzp, deep_cells_assignment_balrog, wide_cells_assignment_balrog, deep_cells_assignment_spec, wide_cells_assignment_spec, bands, self.config.redshift_col, zbins)
             photoz_realizations = {}
             for idx, nz_r in enumerate(nz_realizations):
                 photoz_realizations["LHC_id_{0}".format(idx)]= nz_r
