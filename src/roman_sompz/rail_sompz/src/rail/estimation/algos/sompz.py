@@ -7,7 +7,7 @@ import qp
 from ceci.config import StageParameter as Param
 from rail.core.data import TableHandle, ModelHandle, QPHandle, Hdf5Handle
 from rail.estimation.estimator import CatEstimator, CatInformer
-import rail.estimation.algos.som as somfuncs
+import roman_sompz.rail_sompz.src.rail.estimation.algos.som as somfuncs
 from rail.core.common_params import SHARED_PARAMS
 from multiprocessing import Pool
 import pandas as pd
@@ -1168,8 +1168,7 @@ class SOMPZPchat(CatEstimator):
     """
     name = "SOMPZPchat"
     config_options = CatEstimator.config_options.copy()
-    config_options.update(inputs=Param(list, default_input_names, msg="list of the names of columns to be used as inputs for deep data"),
-                          )
+    config_options.update(som_shape=Param(list, [32,32], msg="shape of deep som"))
     inputs = [
               ('cell_wide_wide_data', TableHandle),
               ]
@@ -1182,13 +1181,19 @@ class SOMPZPchat(CatEstimator):
         # check on bands, errs, and prior band
 
     def run(self):
+        som_shape=self.config['som_shape']
+        som_cell_total = som_shape[0] * som_shape[1]
         cell_wide_wide_data = self.get_data('cell_wide_wide_data')
         weights = np.ones(len(cell_wide_wide_data['cells']))
         wide_data_for_pz = pd.DataFrame({'cell_wide': cell_wide_wide_data['cells'], 
                                         'overlap_weight': weights})    
 
         cells, cell_weights = get_cell_weights_wide(wide_data_for_pz,  overlap_weighted_pchat=True, force_assignment=False, cell_key='cell_wide')
-        pchat = dict(pchat=cell_weights)
+        
+        full_pchat_array = np.zeros(som_cell_total)
+        full_pchat_array[cells] = cell_weights
+        pchat = dict(pchat=full_pchat_array)
+
         self.add_data('pchat',pchat)
 
     def estimate(self, cell_deep_balrog_data, cell_wide_balrog_data):
@@ -1196,7 +1201,6 @@ class SOMPZPchat(CatEstimator):
         self.set_data('cell_wide_balrog_data', cell_wide_balrog_data)
         self.run()
         self.finalize()
-
 
 
 
@@ -1440,6 +1444,29 @@ class SOMPZEstimatorBase(CatEstimator):
         -------
 
         """
+        # --- Boyan: START PATCH ---
+        # --- There is chunck padding and actual data mismatch ---
+        # --- This is brute force solution to it. Problem probably lie in table_io ---
+        # 1. If the iterator hands us a chunk completely past the file limit, ignore it.
+        print('PATCH with resize chunk')
+        print(self._input_length)
+        
+        if start >= self._input_length:
+            return
+            
+        # 2. If the iterator's end index overshoots the file limit, trim the data to fit.
+        if end > self._input_length:
+            true_end = self._input_length
+            true_size = true_end - start
+            for key in output_chunk.keys():
+                truncated_data = output_chunk[key][true_size:]
+                print(f"Truncating from '{key}': {truncated_data}")
+                
+                output_chunk[key] = output_chunk[key][:true_size]
+            end = true_end
+        
+        # --- END PATCH ---
+        
         if first:
             self._output_handle = self.add_handle('assignment', data=output_chunk)
             self._output_handle.initialize_write(self._input_length, communicator=self.comm)

@@ -1,11 +1,11 @@
 output_dir: ./
-log_dir: out
+log_dir: out_specz_cosmos20_classic
 resume: True # If all the outputs for a stage already exist then do not re-run that stage
-config: ../yaml/config.yaml
+config: ../yaml/config_specz_cosmos20_classic.yaml
 modules: rail
 inputs:
+  input_spec_data: ./data/hlwas_cosmos_260120_UM_2026_01_22_classic_specmatch.parquet
   input_deep_data: ./data/hlwas_cosmos_260120_UM_2026_01_22.parquet
-  input_spec_data: ./data/hlwas_cosmos_260120_UM_2026_01_22.parquet
   input_wide_data: ./data/hlwas_cosmos_260120_UM_2026_01_22.parquet
   input_sfd_data: ./data/sfd_ebv.fit
   input_lss_error_data: ./data/lss_error.fit
@@ -218,6 +218,8 @@ stages:
       wide_som: model_som_wide_informer
       wide_cells_assignment_balrog_files: assignment_som_deepwide_estimator
       deep_cells_assignment_balrog_files: assignment_som_deepdeep_estimator 
+      deep_cells_assignment_spec_files: assignment_som_deepspec_estimator
+      wide_cells_assignment_spec_files: assignment_som_widespec_estimator
 
 site:
   max_threads: 128
