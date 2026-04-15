@@ -321,7 +321,6 @@ sompz_pchat:
   name: sompz_pchat
   config: None
   pchat: out/pchat.hdf5
-
 sompz_tomobin:
   output_mode: default
   chunk_size: 2000
@@ -367,8 +366,8 @@ PreparePZRealizationsPipe:
   redshift_sample_uncertainty: &id024 False
   photometric_zeropoint_deep: &id017 True 
   photometric_zeropoint_wide: &id018 True
-  photometric_skybackground_deep: &id019 True
-  photometric_skybackground_wide: &id022 True
+  photometric_skybackground_deep: &id019 False
+  photometric_skybackground_wide: &id022 False
   deepfield_zeropoint_data: [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001] 
   widefield_zeropoint_data: [0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002] 
   num_lhc_points: &id021 5
@@ -387,7 +386,7 @@ PhotozDeepDeepZpDustPipe:
   redshift_col: *id013
   inputs: *id002
   input_ra_col: ra
-  input_dec_col: ra
+  input_dec_col: dec
   input_errs: *id003
   zero_points: *id004
   som_shape: *id005
@@ -418,7 +417,7 @@ PhotozDeepWideZpDustPipe:
   redshift_col: *id013
   inputs: *id006
   input_ra_col: ra
-  input_dec_col: ra
+  input_dec_col: dec
   input_errs: *id007
   zero_points: *id008
   som_shape: *id009
@@ -449,7 +448,7 @@ PhotozWideWideZpDustPipe:
   redshift_col: *id013
   inputs: *id006
   input_ra_col: ra
-  input_dec_col: ra
+  input_dec_col: dec
   input_errs: *id007
   zero_points: *id008
   som_shape: *id009
@@ -470,8 +469,8 @@ PhotozWideWideZpDustPipe:
   
 Samplevariance: 
     area:  20.0
-    zbins_min: 0.0
-    zbins_max: *id011
+    zbins_zmin: 0.0
+    zbins_zmax: *id011
     zbins_dz: *id020 
     Sample_variance: ./out/Sample_variance.fit
     

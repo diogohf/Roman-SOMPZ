@@ -81,9 +81,9 @@ class PreparePZRealizationsPipe(RailStage):
             deep_zp_t['samples'] = deep_zp_samples
             deep_zp_table = apTable.Table(deep_zp_t)
             deep_zp_table = tables_io.convert(deep_zp_table, tables_io.types.NUMPY_FITS)
-            #deep_zp_filename, deep_zp_file_extension = os.path.splitext(deep_zp_filename)
-            #print(deep_zp_table, deep_zp_filename, deep_zp_file_extension)
-            #tables_io.write(deep_zp_table, deep_zp_filename, deep_zp_file_extension[1:])
+        else:
+            deep_zp_table = apTable.Table()
+            deep_zp_table = tables_io.convert(deep_zp_table, tables_io.types.NUMPY_FITS)
 
     
 
@@ -93,8 +93,9 @@ class PreparePZRealizationsPipe(RailStage):
             wide_zp_t['samples'] = wide_zp_samples
             wide_zp_table = apTable.Table(wide_zp_t)
             wide_zp_table = tables_io.convert(wide_zp_table, tables_io.types.NUMPY_FITS)
-            #wide_zp_filename, wide_zp_file_extension = os.path.splitext(wide_zp_filename)
-            #tables_io.write(wide_zp_table, wide_zp_filename, wide_zp_file_extension[1:])
+        else:
+            wide_zp_table = apTable.Table()
+            wide_zp_table = tables_io.convert(wide_zp_table, tables_io.types.NUMPY_FITS)
 
         # We need to use the same dust error map for the deep and wide field, assuming they are both corrected using the csdf map
         if photometric_skybackground_deep or photometric_skybackground_wide: 
@@ -103,8 +104,9 @@ class PreparePZRealizationsPipe(RailStage):
             sky_t['samples'] = sky_samples
             sky_table = apTable.Table(sky_t)
             sky_table = tables_io.convert(sky_table, tables_io.types.NUMPY_FITS)
-            #sky_filename, sky_file_extension = os.path.splitext(sky_filename)
-            #tables_io.write(sky_table, sky_filename, sky_file_extension[1:])
+        else:
+            sky_table = apTable.Table()
+            sky_table = tables_io.convert(sky_table, tables_io.types.NUMPY_FITS)
             
         self.add_data("LHC_samples_deep_zp", deep_zp_table)
         self.add_data("LHC_samples_wide_zp", wide_zp_table)
