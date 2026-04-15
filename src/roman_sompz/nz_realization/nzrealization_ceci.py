@@ -320,9 +320,7 @@ class PhotozZpDustPipe(CatEstimator):
         # --- There is chunck padding and actual data mismatch ---
         # --- This is brute force solution to it. Problem probably lie in table_io ---
         # 1. If the iterator hands us a chunk completely past the file limit, ignore it.
-        print('PATCH with resize chunk')
-        print(self._input_length)
-        
+
         if start >= self._input_length:
             return
             
