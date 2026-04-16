@@ -82,30 +82,27 @@ class PreparePZRealizationsPipe(RailStage):
             deep_zp_table = apTable.Table(deep_zp_t)
             deep_zp_table = tables_io.convert(deep_zp_table, tables_io.types.NUMPY_FITS)
         else:
-            deep_zp_table = apTable.Table()
+            deep_zp_table = apTable.Table(names=['samples'], dtype=['>f8'])
             deep_zp_table = tables_io.convert(deep_zp_table, tables_io.types.NUMPY_FITS)
-
     
 
         if photometric_zeropoint_wide: 
-            #wide_zp_filename = self.get_output(self.outputs[1][0])
             wide_zp_t = np.zeros(len(wide_zp_samples), dtype=[("samples", '>f8', wide_zp_samples.shape[-1])])
             wide_zp_t['samples'] = wide_zp_samples
             wide_zp_table = apTable.Table(wide_zp_t)
             wide_zp_table = tables_io.convert(wide_zp_table, tables_io.types.NUMPY_FITS)
         else:
-            wide_zp_table = apTable.Table()
+            wide_zp_table = apTable.Table(names=['samples'], dtype=['>f8'])
             wide_zp_table = tables_io.convert(wide_zp_table, tables_io.types.NUMPY_FITS)
 
         # We need to use the same dust error map for the deep and wide field, assuming they are both corrected using the csdf map
         if photometric_skybackground_deep or photometric_skybackground_wide: 
-            #sky_filename = self.get_output(self.outputs[2][0])
             sky_t = np.zeros(len(sky_samples), dtype=[("samples", '>f8', sky_samples.shape[-1])])
             sky_t['samples'] = sky_samples
             sky_table = apTable.Table(sky_t)
             sky_table = tables_io.convert(sky_table, tables_io.types.NUMPY_FITS)
         else:
-            sky_table = apTable.Table()
+            sky_table = apTable.Table(names=['samples'], dtype=['>f8'])
             sky_table = tables_io.convert(sky_table, tables_io.types.NUMPY_FITS)
             
         self.add_data("LHC_samples_deep_zp", deep_zp_table)
