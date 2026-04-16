@@ -202,7 +202,7 @@ stages:
 - name: RunPZRealizationsPipe
   classname: RunPZRealizationsPipe
   nprocess: 1
-  module_name: roman_sompz.nz_realization.nzrealization_ceci_3a
+  module_name: roman_sompz.nz_realization.nzrealization_ceci
   aliases:
       deep_balrog_file: input_deep_data
       redshift_deep_balrog_file: input_spec_data
