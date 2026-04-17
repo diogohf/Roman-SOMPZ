@@ -201,9 +201,9 @@ som_widewide_estimator:
   output_mode: default
   chunk_size: 2000
   hdf5_groupname: None
-  zmin: *id011
-  zmax: *id012
-  nzbins: 62
+  zmin: 0.0
+  zmax: *id011
+  nzbins: *id012
   calculated_point_estimates: *id001
   recompute_point_estimates: false
   redshift_col: *id013
@@ -255,7 +255,7 @@ som_pzc_stage:
   hdf5_groupname: None
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: *id012
+  zbins_dz: &id020 0.05
   calculated_point_estimates: *id001
   recompute_point_estimates: false
   inputs: &id010
@@ -270,7 +270,7 @@ som_pzc_stage:
   - 3.0
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: *id012
+  zbins_dz: *id020
   name: som_pzc_stage
   pz_c: out_Dec/pz_c.hdf5
   config: None
@@ -304,7 +304,7 @@ sompz_pzchat:
   bin_edges: *id023
   zbins_min: 0.0
   zbins_max: *id011
-  zbins_dz: &id020 0.05
+  zbins_dz: *id020 
   name: sompz_pzchat
   config: None
   pz_chat: out_Dec/pz_chat.hdf5
@@ -365,11 +365,11 @@ PreparePZRealizationsPipe:
   redshift_sample_uncertainty: &id024 False
   photometric_zeropoint_deep: &id017 True 
   photometric_zeropoint_wide: &id018 True
-  photometric_skybackground_deep: &id019 True
-  photometric_skybackground_wide: &id022 True
+  photometric_skybackground_deep: &id019 False
+  photometric_skybackground_wide: &id022 False
   deepfield_zeropoint_data: [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
   widefield_zeropoint_data: [0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002]
-  num_lhc_points: &id021 5
+  num_lhc_points: &id021 20
   LHC_samples_deep_zp: ./out_Dec/LHC_samples_deep_zp.fit
   LHC_samples_wide_zp: ./out_Dec/LHC_samples_wide_zp.fit
   LHC_samples_sky: ./out_Dec/LHC_samples_sky.fit

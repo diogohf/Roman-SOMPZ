@@ -1276,6 +1276,7 @@ class SOMPZnz(CatEstimator):
                           )
     inputs = [('spec_data', TableHandle),
               ('cell_deep_spec_data', TableHandle),
+              ('cell_wide_spec_data', TableHandle),
               ('cell_wide_wide_data', TableHandle),
               ('tomo_bins_wide', Hdf5Handle),
               ('pc_chat', Hdf5Handle),
@@ -1291,6 +1292,7 @@ class SOMPZnz(CatEstimator):
     def run(self):
         spec_data = self.get_data('spec_data')
         cell_wide_wide_data = self.get_data('cell_wide_wide_data')
+        cell_wide_spec_data = self.get_data('cell_wide_spec_data')
         cell_deep_spec_data = self.get_data('cell_deep_spec_data')
         self.wide_som_size = int(cell_wide_wide_data['som_size'][0])
         self.deep_som_size = int(cell_deep_spec_data['som_size'][0])
@@ -1306,25 +1308,44 @@ class SOMPZnz(CatEstimator):
         key = self.config.redshift_col
         zbins = np.arange(self.config.zbins_min - self.config.zbins_dz / 2., self.config.zbins_max + self.config.zbins_dz, self.config.zbins_dz)
         spec_data_for_pz = pd.DataFrame({key: spec_data[key],
-                                         'cell_deep': cell_deep_spec_data['cells']})
+                                         'cell_deep': cell_deep_spec_data['cells'],
+                                         'cell_wide': cell_wide_spec_data['cells'],
+                                         'overlap_weight': np.ones(len(cell_wide_spec_data['cells']))})
 
-        wide_data_for_pz = pd.DataFrame({'cell_wide': cell_wide_wide_data['cells']})
+        wide_data_for_pz = pd.DataFrame({'cell_wide': cell_wide_wide_data['cells'],
+                                         'overlap_weight': np.ones(len(cell_wide_wide_data['cells']))})
 
         all_wide_cells = np.arange(self.wide_som_size)
         all_deep_cells = np.arange(self.deep_som_size)
-        nz = redshift_distributions_wide(data=wide_data_for_pz,
-                                         deep_data=spec_data_for_pz,
-                                         overlap_weighted_pchat=False,
-                                         overlap_weighted_pzc=False,
-                                         bins=zbins,
-                                         deep_som_size=self.deep_som_size,
-                                         pcchat=pc_chat,
-                                         tomo_bins=tomo_bins_wide,
-                                         key=key,
-                                         force_assignment=False,
-                                         cell_key='cell_wide')
+
+        #Bin-conditionalization
+        print('Doing Bin-cond')
+        nzs = []
+        for tomo_key in tomo_bins_wide:
+            cells_use = tomo_bins_wide[tomo_key][:, 0]
+            bl = len(spec_data_for_pz[spec_data_for_pz['cell_wide'].isin(cells_use)])
+            print('subset of redshift sample in bin:', bl)
+            
+            f = 1.e9  # how much more we weight the redshift of a galaxy that's in the right bin
+            spec_data_for_pz_bincond = spec_data_for_pz.copy()
+            spec_data_for_pz_bincond.loc[spec_data_for_pz_bincond['cell_wide'].isin(cells_use), 'overlap_weight'] *= f
+            
+            nz = redshift_distributions_wide(data=wide_data_for_pz,
+                                             deep_data=spec_data_for_pz_bincond,
+                                             overlap_weighted_pchat=True,
+                                             overlap_weighted_pzc=True,
+                                             bins=zbins,
+                                             deep_som_size=self.deep_som_size,
+                                             pcchat=pc_chat,
+                                             tomo_bins={"mybin": tomo_bins_wide[tomo_key]},
+                                             key=key,
+                                             force_assignment=False,
+                                             cell_key='cell_wide')
+            nzs += [nz]
+            
+        nzs = np.array(nzs)
         self.bincents = 0.5 * (zbins[1:] + zbins[:-1])
-        tomo_ens = qp.Ensemble(qp.interp, data=dict(xvals=self.bincents, yvals=nz))
+        tomo_ens = qp.Ensemble(qp.interp, data=dict(xvals=self.bincents, yvals=nzs))
         self.add_data('nz', tomo_ens)
 
     def estimate(self, spec_data, cell_deep_spec_data, cell_wide_wide_data, tomo_bins_wide, pc_chat):

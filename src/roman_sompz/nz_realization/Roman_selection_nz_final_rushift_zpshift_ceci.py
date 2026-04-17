@@ -179,13 +179,14 @@ def get_realizations(sv_redshift_data, sv_deep_data, shot_noise, sample_variance
             sumbin += np.sum(nzt[:,((zmeant==i))],axis=1).sum()
             nTs[i] = np.sum(nzt[:,((zmeant==i))],axis=1).sum()
             #if not enough galaxy in this T still add, otherwide T num j+=1. append i to T dict
-            if (sumbin <= np.sum(nzt)/(nT-1))|(j==nT-1):
+            if (sumbin <= np.sum(nzt)/(nT))|(j==nT-1):
                 bins[str(j)].append(i)
             else:
                 j += 1
                 bins[str(j)].append(i)
                 sumbin = np.sum(nzt[:,((zmeant==i))],axis=1).sum()
 
+        print(bins)
         # tot number of redshift galaxies
         print('total galaxy num', np.sum(nzt), np.sum(nzt)/6) 
         # number of redshift galaxies in each phenotype

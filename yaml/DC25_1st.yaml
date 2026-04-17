@@ -4,11 +4,11 @@ resume: True # If all the outputs for a stage already exist then do not re-run t
 config: ../yaml/config_DC25_1st.yaml
 modules: rail
 inputs:
-  input_deep_data: /home/chto/code/Roman/data/openUV24/output_slimfarmer_multi_realization/cat_Mosaic_1_merged.parquet
-  input_spec_data: /home/chto/code/Roman/data/openUV24/output_slimfarmer_multi_realization/cat_Mosaic_1_merged.parquet
-  input_wide_data: /home/chto/code/Roman/data/openUV24/output_slimfarmer_multi_realization/cat_Mosaic_1_merged.parquet
-  input_sfd_data: /home/chto/code/Roman/code/Roman-SOMPZ/job/data/sfd_ebv.fit
-  input_lss_error_data: /home/chto/code/Roman/code/Roman-SOMPZ/job/data/lss_error.fit
+  input_deep_data: ./data/cat_Mosaic_1_merged.parquet
+  input_spec_data: ./data/cat_Mosaic_1_merged.parquet
+  input_wide_data: ./data/cat_Mosaic_1_merged.parquet
+  input_sfd_data: ./data/sfd_ebv.fit
+  input_lss_error_data: ./data/lss_error.fit
 stages:
 - name: checkinputdeep
   classname: Inputcheck 
@@ -141,6 +141,7 @@ stages:
   aliases:
     spec_data: input_spec_data
     cell_deep_spec_data: assignment_som_deepspec_estimator
+    cell_wide_spec_data: assignment_som_widespec_estimator
     cell_wide_wide_data: assignment_som_widewide_estimator
     tomo_bins_wide: tomo_bins_wide_sompz_tomobin
     pc_chat: pc_chat_pcchat_stage
@@ -223,6 +224,6 @@ stages:
 
 site:
   max_threads: 48
-  mpi_command: mpirun -np
+  mpi_command: srun -n
   name: local
 
