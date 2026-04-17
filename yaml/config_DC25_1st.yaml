@@ -124,8 +124,8 @@ som_deepdeep_estimator:
   chunk_size: 2000
   hdf5_groupname: None
   zmin: 0.0
-  zmax: &id011 5.0
-  nzbins: &id012 101
+  zmax: &id011 3.05
+  nzbins: &id012 62 
   calculated_point_estimates: &id001 []
   recompute_point_estimates: false
   redshift_col: *id013
@@ -203,7 +203,7 @@ som_widewide_estimator:
   hdf5_groupname: None
   zmin: *id011
   zmax: *id012
-  nzbins: 301
+  nzbins: 62
   calculated_point_estimates: *id001
   recompute_point_estimates: false
   redshift_col: *id013
@@ -355,7 +355,7 @@ sompz_pchat:
   inputs: *id010
   name: sompz_pchat
   config: None
-  pz_chat: out_Dec/pchat.hdf5
+  pchat: out_Dec/pchat.hdf5
 
 
 
@@ -468,9 +468,9 @@ PhotozWideWideZpDustPipe:
   
 Samplevariance: 
     area:  20.0
-    zbins_zmin: 0.0
-    zbins_zmax: *id011
-    zbins_dz: *id020 
+    zbins_min: 0.0
+    zbins_max: *id011
+    zbins_dz: *id020
     Sample_variance: ./out_Dec/Sample_variance.fit
     
 RunPZRealizationsPipe:
