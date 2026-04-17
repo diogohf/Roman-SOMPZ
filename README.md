@@ -26,6 +26,13 @@ This project uses the following as git submodules:
 - `rail_base` - Core RAIL (Redshift Assessment Infrastructure Layers) framework
 - `tables_io` - I/O utilities for tabular data
 
+### Note
+Do this in the Roman-SOMPZ directory after git pull. Otherwise it may not read the changes.
+```
+pip install .
+```
+
+
 ## NERSC installation 
 1. Fork the repository
 2. Clone the Roman-SOMPZ repository with submodules:
