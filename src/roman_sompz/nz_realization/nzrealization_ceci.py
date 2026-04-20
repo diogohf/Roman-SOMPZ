@@ -1,6 +1,10 @@
 from scm_pipeline import PipelineStage
 from rail.core.stage import RailStage
 from rail.core.data import TableHandle, ModelHandle, QPHandle, Hdf5Handle
+
+
+class NumpyFitsHandle(TableHandle):
+    suffix = "fit"
 from rail.estimation.estimator import CatEstimator, CatInformer
 from ceci.config import StageParameter as Param
 import roman_sompz.rail_sompz.src.rail.estimation.algos.som as somfuncs
@@ -36,7 +40,7 @@ class PreparePZRealizationsPipe(RailStage):
 
     name = "PreparePZRealizationsPipe"
     inputs = ("sfd_data",TableHandle), ("lss_error_data",TableHandle)
-    outputs = [("LHC_samples_deep_zp",TableHandle), ("LHC_samples_wide_zp",TableHandle),  ("LHC_samples_sky",TableHandle)]
+    outputs = [("LHC_samples_deep_zp",NumpyFitsHandle), ("LHC_samples_wide_zp",NumpyFitsHandle),  ("LHC_samples_sky",NumpyFitsHandle)]
     parallel = False
 
     config_options = {
@@ -390,7 +394,7 @@ class Samplevariance(PipelineStage):
 
     name = "Samplevariance"
     inputs = []
-    outputs = [("Sample_variance", TableHandle)] 
+    outputs = [("Sample_variance", NumpyFitsHandle)]
     parallel = False
 
     config_options = {
