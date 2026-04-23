@@ -179,7 +179,8 @@ def get_realizations(sv_redshift_data, sv_deep_data, shot_noise, sample_variance
             sumbin += np.sum(nzt[:,((zmeant==i))],axis=1).sum()
             nTs[i] = np.sum(nzt[:,((zmeant==i))],axis=1).sum()
             #if not enough galaxy in this T still add, otherwide T num j+=1. append i to T dict
-            if (sumbin <= np.sum(nzt)/(nT))|(j==nT-1):
+            #nT-1 is necessary here, because otherwise all but last bin will have smaller nT and the last bin will overflow with all leftovers
+            if (sumbin <= np.sum(nzt)/(nT-1))|(j==nT-1):
                 bins[str(j)].append(i)
             else:
                 j += 1

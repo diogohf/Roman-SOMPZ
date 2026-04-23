@@ -205,8 +205,8 @@ som_widewide_estimator:
   output_mode: default
   chunk_size: 2000
   hdf5_groupname: None
-  zmin: *id011
-  zmax: *id012
+  zmin: 0.0
+  zmax: *id011
   nzbins: 301
   calculated_point_estimates: *id001
   recompute_point_estimates: false
@@ -357,8 +357,8 @@ sompz_nz:
   zbins_max: *id011
   zbins_dz: *id020
   name: sompz_nz
-  wide_som_size: 625
-  deep_som_size: 1024
+  wide_som_size: 1024
+  deep_som_size: 4096
   nz: ./out/FINAL_NZ.hdf5
   config: None
 PreparePZRealizationsPipe:
@@ -469,8 +469,8 @@ PhotozWideWideZpDustPipe:
   
 Samplevariance: 
     area:  20.0
-    zbins_zmin: 0.0
-    zbins_zmax: *id011
+    zbins_min: 0.0
+    zbins_max: *id011
     zbins_dz: *id020 
     Sample_variance: ./out/Sample_variance.fit
     
