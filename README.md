@@ -31,7 +31,9 @@ Do this in the Roman-SOMPZ directory after git pull. Otherwise it may not read t
 ```
 pip install .
 ```
-
+RAIL I/O Issue:
+When running a galaxy number > 1,048,576 (1MB), please set your config chunk_size to a power of 2 (like 2048 or 4096) as a solution for now.
+HDF5 chunks are this size, and the I/O handles parallel reading by cutting chunks precisely at these boundaries. However, the start index of the next process is not currently adjusted in RAIL. Because of this, galaxy assignments beyond 1,048,576 will not end up in the right place. 
 
 ## NERSC installation 
 1. Fork the repository
